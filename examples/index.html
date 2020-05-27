@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+</head>
+<body>
+  <div id="app">
+      <svg id="wordcloud" width="500" height="500"></svg>
+  </div>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="https://d3js.org/d3-dispatch.v1.min.js"></script>
+  <script src="wordcloud.js"></script>
+  <script>
+      const len = 100
+      const text = 'The layout algorithm for positioning words without overlap is available on GitHub under an open source license as d3-cloud. Note that this is the only the layout algorithm and any code for converting text into words and rendering the final output requires additional development'.toLowerCase()
+      const segs = text.split(' ')
+      const words = segs.map(d => ({ text: d, size: Math.random() * 20 + 10 }))
+      let cloud = d3.wordcloud()
+      let t1 = new Date()
+      cloud.words(words)
+        .size([500, 500])
+        .polygon([[0,0], [0,500], [500, 500], [500, 0]])
+        .fontSize((d) => d.size)
+        .font('Microsoft Yahei')
+        .on('end', function(words){
+            console.log(new Date() - t1)
+            let svg = d3.select("#wordcloud")
+            svg.selectAll('.word').data(words).enter()
+                .append('text')
+                .text(d => d.text)
+                .attr('class', 'word')
+                .attr('x', d => d.x)
+                .attr('y', d => d.y)
+                .attr('font-size', d => `${d.size - 1}px`)
+                .attr('font-family', d => d.font)
+        })
+        .start()
+  </script>
+</body>
+</html>
